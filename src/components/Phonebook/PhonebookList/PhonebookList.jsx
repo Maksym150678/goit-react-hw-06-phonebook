@@ -1,38 +1,34 @@
+import styles from './phonebook-list.module.css';
 import PropTypes from 'prop-types';
 
-import styles from './phonebook-list.module.css';
-
-
-const PhonebookList = ({items, removeContact}) => {
-    const elements = items.map (({id, name, number }) => (
-        <li key={id} className={styles.item}>
-            &bull;  {name}: {number}
-            <button onClick={() => removeContact(id)} className={styles.btn}>Delete</button>
+const PhonebookList = ({ phoneList, onDeletePhoneListItem }) => {
+  return (
+    <ul className={styles.list}>
+      {phoneList.map(({ id, name, number }) => (
+        <li key={id} className={styles.phonebookListItem}>
+          <p className={styles.nameText} >{name}</p>
+          <p className={styles.phoneNumber} >{number}</p>
+          <button
+            className={styles.buttonDelete}
+            onClick={() => onDeletePhoneListItem(id)}
+          >
+            Delete
+          </button>
         </li>
-    ));
-    return (
-        <>
-        <h2 className={styles.title}>Contacts</h2>
-        <h3 className={styles.filter}>Find contacts by name</h3>
-        <ol>
-            {elements}
-        </ol>
-        </>
-    )
- 
-}
+      ))}
+    </ul>
+  );
+};
 
 export default PhonebookList;
 
-PhonebookList.defaultProps = {
-    items: []
-}
-
 PhonebookList.propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired,
-
-    }))
-}
+  phoneList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    })
+  ),
+  onDeletePhoneListItem: PropTypes.func,
+};

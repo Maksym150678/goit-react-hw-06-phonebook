@@ -1,143 +1,89 @@
+import React from 'react';
 import { useState } from 'react';
-// import PropTypes from 'prop-types';
-import styles from './form-add-phonebook.module.css';
-import initialState from '../initialState';
-
 import { nanoid } from 'nanoid';
-module.id = nanoid(5);
+import styles from './form-add-phonebook.module.css';
+import PropTypes from 'prop-types';
 
-const FormAddPhonebook = ({onSubmit}) => {
-    const [state, setState] = useState({...initialState});
+function FormAddPhonebook({ onSubmit }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-    const handleChange = ({target}) => {
-        const {name, value} = target;
-        setState(prevState => ({
-            ...prevState,
-            [name]: value
-        }))
+  const nameInputId = nanoid();
+  const numberInputId = nanoid();
+
+  const hendleInputChange = event => {
+    const { name, value } = event.currentTarget;
+
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'number':
+        setNumber(value);
+        break;
+      default:
+        return;
+    }
+  };
+
+  const hendleSubmit = event => {
+    event.preventDefault();
+    const data = {
+      name,
+      number,
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit({...state});
-        setState({...initialState})
-    };
+    onSubmit(data);
 
-const {name, number} = state;
+    resetAddPhonebook();
+  };
 
-return (
-    <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-            <label>Name</label>
-            <input value={name} onChange={handleChange} className={styles.field} placeholder='Enter name'
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-             />
-        </div>
-        <div className={styles.formGroup}>
-            <label>Number</label>
-            <input value={number} onChange={handleChange} className={styles.field} placeholder='Enter the phone number'
-            type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-             /> 
-        </div>
-        <button className={styles.btn}>Add contact</button>
+  const resetAddPhonebook = () => {
+    setName('');
+    setNumber('');
+  };
 
+  return (
+    <form onSubmit={hendleSubmit} className={styles.form}>
+        <h1 className={styles.title}>Phonebook</h1>
+      <label htmlFor={nameInputId} className={styles.label}>
+        <h2 className={styles.subtitle}>Name</h2>
+        <input
+          type="text"
+          name="name"
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+          className={styles.input}
+          value={name}
+          onChange={hendleInputChange}
+          id={nameInputId}
+          placeholder='Enter name'
+        />
+      </label>
+      <label htmlFor={numberInputId} className={styles.label}>
+        <h2 className={styles.subtitle}>Number</h2>  
+        <input
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+          className={styles.input}
+          value={number}
+          onChange={hendleInputChange}
+          id={numberInputId}
+          placeholder='Enter the phone number'
+        />
+      </label>
+      <button className={styles.btn} type="submit">Add contact</button>
     </form>
-
-)
-
+  );
 }
-
-
-
-
-// class FormAddPhonebook extends Component {
-
-//     static defaultProps = {
-//         onSubmit: () => {}
-//     }
-
-//     static propTypes = {
-//         onSubmit: PropTypes.func,
-//     }
-
-//     state = {
-//         name: '',
-//         number: ''
-//       }
-
-//       nameId = nanoid();
-//       numberId = nanoid();
-
-//       handleChange = ({target}) => {
-//         const {value, name} = target;
-//         this.setState({
-//             [name]: value,
-//         });
-//       }
-
-//       handleSubmit = (e) => {
-//          e.preventDefault();
-//          const {onSubmit} = this.props;
-//          onSubmit({...this.state});
-//          this.reset()
-//       }
-
-//       reset() {
-//         this.setState({
-//             name: '',
-//             number: ''
-//          })
-//       }
-
-//     render() {
-//         const{handleSubmit, handleChange} = this;
-
-//         const {name, number} = this.state; 
-        
-//         return (
-//             <form onSubmit={handleSubmit}>
-//                 <div className={styles.formGroup}>
-//                     <label>Name</label>
-//                     <input id={this.nameId} value={name} onChange={handleChange} className={styles.field} placeholder='Enter name'
-//                     type="text"
-//                     name="name"
-//                     pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-//                     title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-//                     required
-//                      />
-//                 </div>
-//                 <div className={styles.formGroup}>
-//                     <label>Number</label>
-//                     <input id={this.numberId} value={number} onChange={handleChange} className={styles.field} placeholder='Enter the phone number'
-//                     type="tel"
-//                     name="number"
-//                     pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-//                     title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-//                     required
-//                      /> 
-//                 </div>
-//                 <button className={styles.btn}>Add contact</button>
-
-//             </form>
-
-//         )
-//     }
-// }
 
 export default FormAddPhonebook;
 
-FormAddPhonebook.defaultProps = {
-    onsubmit: () => {}
-  }
-
-//   FormAddPhonebook.PropTypes = {
-//     onSubmit: PropTypes.func,
-//   }
+FormAddPhonebook.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
+ 

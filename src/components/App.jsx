@@ -1,81 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import PhonebookList from './Phonebook/PhonebookList/PhonebookList';
+import FormAddPhonebook from './Phonebook/FormAddPhonebook/FormAddPhonebook';
+import Filter from './Phonebook/Filter/Filter';
 
-import { nanoid } from 'nanoid';
-import FormAddPhonebook from 'components/Phonebook/FormAddPhonebook/FormAddPhonebook';
-import PhonebookList from 'components/Phonebook/PhonebookList/PhonebookList';
-import styles from 'components/app.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  addContact,
+  delContact,
+} from '../redux/items/phone-book-items-actions';
+import { addFilter } from 'redux/filter/phoneBookFilter-actions';
+import { getContacts } from '../redux/items/phone-book-items-selector';
+import { getFilter } from '../redux/filter/phoneBookFilter-selector';
 
-import { useSelector } from 'react-redux';
+function App() {
+  const ArrContacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
-const App = () => {
-  const phonebook = useSelector(store => store.contacts);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+
+  const phoneList = useSelector(store => {
+    const filteredContact = store.items.filter(item =>
+      item.name.toLowerCase().includes(store.filter.toLocaleLowerCase())
+    );
+    return filteredContact;
+  });
+
+  const onAddContact = data => {
+    const { name, number } = data;
+    if (
+      ArrContacts.find(item => item.name === name || item.number === number)
+    ) {
+      return alert(`Такое имя ${name} или номер ${number} есть в контактах!`);
+    }
+    const action = addContact(data);
+    dispatch(action);
+  };
+  const onDelContact = id => {
+    const action = delContact(id);
+    dispatch(action);
+  };
+
+  const onChangeFilter = event => {
+    const action = addFilter(event.currentTarget.value);
+    dispatch(action);
+  };
 
   useEffect(() => {
-    localStorage.setItem('phonebook', JSON.stringify(phonebook));
-  }, [phonebook]);
-
-  
-  //   setPhonebook(prevPhonebook => {
-  //     const newContact = {
-  //       ...data,
-  //       id: nanoid(),
-  //     };
-  //     return [...prevPhonebook, newContact];
-  //   })
-  // };
-
-  
-
-  const handleFilter = ({ target }) => {
-    setFilter(target.value);
-  }
-
-  
-    // return Boolean(result);
-  
-
-  const getFilteredPhonebook = () => {
-    if (!filter) {
-      return phonebook;
-    }
-
-    const normalizedFilter = filter.toLowerCase();
-
-    const filteredPhonebook = phonebook.filter(({ name, number }) => {
-      const normalizedName = name.toLowerCase();
-      const normalizedNumber = number.toLowerCase();
-      const result =
-        normalizedName.includes(normalizedFilter) ||
-        normalizedNumber.includes(normalizedFilter);
-      return result;
-    });
-
-    return filteredPhonebook;
-  }
-
-  const filteredPhonebook = getFilteredPhonebook();
+    localStorage.setItem('phoneList', JSON.stringify(phoneList));
+  }, [phoneList]);
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Phonebook</h1>
-      <div className={styles.row}>
-        <div className={styles.column}>
-          <FormAddPhonebook  />
-        </div>
-        <div>
-          <PhonebookList
-            items={filteredPhonebook}
-          />
-          <input
-            name="filter"
-            onChange={handleFilter}
-            className={styles.filter}
-            placeholder="Filter"
-          />
-        </div>
-      </div>
-    </div>
+    <>
+      <FormAddPhonebook onSubmit={onAddContact} />
+
+      <Filter value={filter} onChange={onChangeFilter} />
+      <PhonebookList
+        phoneList={phoneList}
+        onDeletePhoneListItem={onDelContact}
+      />
+    </>
   );
 }
+
 export default App;
