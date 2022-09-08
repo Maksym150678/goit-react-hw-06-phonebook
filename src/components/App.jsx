@@ -5,44 +5,35 @@ import FormAddPhonebook from 'components/Phonebook/FormAddPhonebook/FormAddPhone
 import PhonebookList from 'components/Phonebook/PhonebookList/PhonebookList';
 import styles from 'components/app.module.css';
 
+import { useSelector } from 'react-redux';
+
 const App = () => {
-  const [phonebook, setPhonebook] = useState(() => {
-    const value = JSON.parse(localStorage.getItem('phonebook'));
-    return value || [];
-  });
+  const phonebook = useSelector(store => store.contacts);
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
     localStorage.setItem('phonebook', JSON.stringify(phonebook));
   }, [phonebook]);
 
-  const addContact = (data) => {
-    if(isDublicate(data)) {
-      return alert(`${data.name} - ${data.number} is alredy in contacts.`);
-    }
-    setPhonebook(prevPhonebook => {
-      const newContact = {
-        ...data,
-        id: nanoid(),
-      };
-      return [...prevPhonebook, newContact];
-    })
-  };
+  
+  //   setPhonebook(prevPhonebook => {
+  //     const newContact = {
+  //       ...data,
+  //       id: nanoid(),
+  //     };
+  //     return [...prevPhonebook, newContact];
+  //   })
+  // };
 
-  const removeContact = (id) => {
-    setPhonebook(prevPhonebook => prevPhonebook.filter(item => item.id !== id));
-  }
+  
 
   const handleFilter = ({ target }) => {
     setFilter(target.value);
   }
 
-  const isDublicate = ({ name, number }) => {
-    const result = phonebook.find(
-      item => item.name === name && item.number === number
-    );
-    return Boolean(result);
-  };
+  
+    // return Boolean(result);
+  
 
   const getFilteredPhonebook = () => {
     if (!filter) {
@@ -70,12 +61,11 @@ const App = () => {
       <h1 className={styles.title}>Phonebook</h1>
       <div className={styles.row}>
         <div className={styles.column}>
-          <FormAddPhonebook onSubmit={addContact} />
+          <FormAddPhonebook  />
         </div>
         <div>
           <PhonebookList
             items={filteredPhonebook}
-            removeContact={removeContact}
           />
           <input
             name="filter"
@@ -87,6 +77,5 @@ const App = () => {
       </div>
     </div>
   );
-};
-
+}
 export default App;
